@@ -1,4 +1,4 @@
-```VBA
+```vba
 Sub hlNgayChuaDich()
     Dim rng As Range
     Dim regEx As Object
