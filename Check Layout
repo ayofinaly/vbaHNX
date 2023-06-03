@@ -1,0 +1,68 @@
+Sub checkLayoutvaDich()
+    Selection.WholeStory
+    Selection.Font.Name = "Arial"
+    Selection.Font.Size = 10
+    With Selection.ParagraphFormat
+        .FirstLineIndent = InchesToPoints(0)
+        .LeftIndent = InchesToPoints(0)
+        .CharacterUnitLeftIndent = 0
+        .RightIndent = InchesToPoints(0)
+        .CharacterUnitRightIndent = 0
+    End With
+    With Selection.ParagraphFormat
+        .SpaceBefore = 0
+        .LineUnitBefore = 0
+        .SpaceAfter = 6
+        .LineUnitAfter = 0
+    End With
+    With Selection.ParagraphFormat
+       .LineSpacing = LinesToPoints(1.5)
+    End With
+
+    With Selection.PageSetup
+        .Orientation = wdOrientPortrait
+    End With
+    With Selection.PageSetup
+        .TopMargin = InchesToPoints(1)
+        .BottomMargin = InchesToPoints(1)
+        .LeftMargin = InchesToPoints(1)
+        .RightMargin = InchesToPoints(1)
+    End With
+    With Selection.PageSetup
+        .PageWidth = InchesToPoints(8.27)
+        .PageHeight = InchesToPoints(11.69)
+    End With
+
+    'Xoa Bookmark
+    Dim objBookmark As Bookmark, demSo As Integer
+    demSo = 0
+    For Each objBookmark In ActiveDocument.Bookmarks
+        objBookmark.Delete
+        demSo = demSo + 1
+    Next
+    Dim rng As Range
+    Dim replaced As Boolean
+    Set rng = ActiveDocument.Content
+    Do
+        replaced = False
+        With rng.Find
+            .ClearFormatting
+            .Text = "  "
+            .Replacement.Text = " "
+            .Forward = True
+            .Wrap = wdFindContinue
+            .Format = False
+            .MatchCase = False
+            .MatchWholeWord = False
+            .MatchWildcards = False
+            .MatchSoundsLike = False
+            .MatchAllWordForms = False
+            Do While .Execute
+                rng.Text = Replace(rng.Text, "  ", " ")
+                replaced = True
+            Loop
+        End With
+        rng.Collapse wdCollapseEnd
+    Loop While replaced
+
+End Sub
