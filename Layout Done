@@ -1,0 +1,197 @@
+Sub plainTextLayoutFull()
+    Selection.WholeStory
+    Selection.ClearFormatting
+    Selection.Font.Name = "Arial"
+    Selection.Font.Size = 10
+    Selection.Range.Paragraphs.OutlineLevel = wdOutlineLevelBodyText
+    With Selection.ParagraphFormat
+        .FirstLineIndent = InchesToPoints(0)
+        .LeftIndent = InchesToPoints(0)
+        .CharacterUnitLeftIndent = 0
+        .RightIndent = InchesToPoints(0)
+        .CharacterUnitRightIndent = 0
+    End With
+    With Selection.ParagraphFormat
+        .SpaceBefore = 0
+        .LineUnitBefore = 0
+        .SpaceAfter = 6
+        .LineUnitAfter = 0
+    End With
+    With Selection.ParagraphFormat
+       .LineSpacing = LinesToPoints(1.5)
+    End With
+
+    With Selection.PageSetup
+        .Orientation = wdOrientPortrait
+    End With
+    With Selection.PageSetup
+        .TopMargin = InchesToPoints(1)
+        .BottomMargin = InchesToPoints(1)
+        .LeftMargin = InchesToPoints(1)
+        .RightMargin = InchesToPoints(1)
+    End With
+    With Selection.PageSetup
+        .PageWidth = InchesToPoints(8.27)
+        .PageHeight = InchesToPoints(11.69)
+    End With
+
+    'Xoa Bookmark
+    Dim objBookmark As Bookmark, demSo As Integer
+    demSo = 0
+    For Each objBookmark In ActiveDocument.Bookmarks
+        objBookmark.Delete
+        demSo = demSo + 1
+    Next 
+
+    'Dat tieu de
+    On Error GoTo ErrorHandler
+    Dim tenfile As String
+    Dim farray1() As String
+    Dim farray2() As String
+    Dim dai As String
+        Selection.HomeKey Unit:=wdStory
+        tenfile = ActiveDocument.Name
+        farray1 = Split(tenfile, "_")
+        farray2 = Split(farray1(0), ".")
+        dai = farray2(1) & ": " & Left(farray1(2), Len(farray1(2)) - 5)
+        Selection.TypeText Text:=dai
+        Selection.MoveStart wdLine, -1
+        Selection.Font.Bold = True
+        Selection.MoveStart wdCharacter, Len(dai)
+        Selection.TypeParagraph
+        Selection.TypeText Text:="Ngày "
+        Selection.TypeParagraph
+        Selection.MoveLeft Unit:=wdCharacter, Count:=1
+    Exit Sub
+ErrorHandler:
+MsgBox "Dat lai ten file"
+    Resume Next
+End Sub
+
+Sub replaceMultiSpaces()
+    Dim rng As Range
+    Dim replaced As Boolean
+    Set rng = ActiveDocument.Content
+    Do
+        replaced = False
+        With rng.Find
+            .ClearFormatting
+            .Text = "  "
+            .Replacement.Text = " "
+            .Forward = True
+            .Wrap = wdFindContinue
+            .Format = False
+            .MatchCase = False
+            .MatchWholeWord = False
+            .MatchWildcards = False
+            .MatchSoundsLike = False
+            .MatchAllWordForms = False
+            Do While .Execute
+                rng.Text = Replace(rng.Text, "  ", " ")
+                replaced = True
+            Loop
+        End With
+        rng.Collapse wdCollapseEnd
+    Loop While replaced
+End Sub
+
+Sub xoaBulletPlus()
+    Selection.Find.ClearFormatting
+    Selection.HomeKey Unit:=wdLine
+    Selection.Find.Text = "+"
+    Selection.Find.Execute
+    Selection.MoveEnd wdCharacter, 1
+    If Selection.Find.found = True Then
+        If Selection.Information(wdFirstCharacterColumnNumber) = 1 Then
+        Selection.Delete
+        Else
+         Selection.MoveRight wdCharacter, 10
+        End If
+    End If
+End Sub
+
+Sub themBulletPlus()
+    With ListGalleries(wdBulletGallery).ListTemplates(1).ListLevels(1)
+        .NumberFormat = "+"
+        .TrailingCharacter = wdTrailingTab
+        .NumberStyle = wdListNumberStyleBullet
+        .NumberPosition = InchesToPoints(0)
+        .Alignment = wdListLevelAlignLeft
+        .TextPosition = InchesToPoints(0)
+        .tabPosition = wdUndefined
+        .ResetOnHigher = 0
+        .StartAt = 1
+        With .Font
+            .Size = 10
+            .Name = "Arial"
+        End With
+        .LinkedStyle = ""
+    End With
+    ListGalleries(wdBulletGallery).ListTemplates(1).Name = ""
+    Selection.Range.ListFormat.ApplyListTemplateWithLevel ListTemplate:= _
+        ListGalleries(wdBulletGallery).ListTemplates(1), ContinuePreviousList:= _
+        False, ApplyTo:=wdListApplyToWholeList, DefaultListBehavior:= _
+        wdWord10ListBehavior
+End Sub
+
+Sub canChinhBang()
+'Autofit + Center
+    With Selection.Tables(1)
+        .AllowPageBreaks = True
+        .AllowAutoFit = True
+    End With
+    Selection.SelectCell
+    Selection.Cells.VerticalAlignment = wdCellAlignVerticalCenter
+    Selection.Tables(1).AutoFitBehavior (wdAutoFitWindow)
+End Sub
+
+Sub indent()
+'indent + tab
+    Dim rng As Range
+    Dim ts As TabStop
+    If Selection.Type <> wdSelectionIP Then
+        Set rng = Selection.Range
+        For Each ts In rng.ParagraphFormat.TabStops
+            ts.Clear
+        Next ts
+    End If
+    With Selection.ParagraphFormat
+        .FirstLineIndent = InchesToPoints(0)
+    End With
+    With Selection.ParagraphFormat
+        .LeftIndent = InchesToPoints(0)
+    End With
+    Dim selRange As Range
+    Set selRange = Selection.Range
+    Dim tabPosition As Double
+    tabPosition = InchesToPoints(0.30)
+    Dim para As Paragraph
+    For Each para In selRange.Paragraphs
+        para.TabStops.Add tabPosition, wdAlignTabLeft, wdTabLeaderSpaces
+    Next para
+End Sub
+
+Sub xuLyDuLieuXuongDong()
+    Dim rng As Range
+    Dim arr() As String
+    Dim lineCount As Integer
+    Dim i As Integer
+    
+    Set rng = Selection.Range
+    lineCount = rng.ComputeStatistics(wdStatisticLines)
+    ReDim arr(0 To (lineCount - 1))
+    For i = 0 To lineCount - 1
+        arr(i) = rng.Paragraphs(i + 1).Range.Text
+    Next i
+    For i = 0 To (UBound(arr) + 1) / 2 - 1
+        Selection.TypeText (arr(i) & " " & arr(((UBound(arr) + 1) / 2) + i))
+    Next i
+    Set rng = Nothing
+    Selection.MoveUp Unit:=wdLine, Count:=(UBound(arr) + 1)
+    For i = 1 To ((UBound(arr) + 1) / 2)
+    Selection.EndKey Unit:=wdLine
+    Selection.Delete Unit:=wdCharacter, Count:=1
+    Selection.MoveDown Unit:=wdLine, Count:=1
+    Next i
+End Sub
+
