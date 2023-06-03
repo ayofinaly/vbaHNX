@@ -1,0 +1,38 @@
+Sub xoaDongTrong()
+    Selection.Find.ClearFormatting
+    Selection.Find.Replacement.ClearFormatting
+    For i = 1 To 3
+    With Selection.Find
+        .Text = "^p^p"
+        .Replacement.Text = "^p"
+        .Forward = True
+        .Wrap = wdFindContinue
+    End With
+    Selection.Find.Execute Replace:=wdReplaceAll
+    Selection.EscapeKey
+    Selection.Find.ClearFormatting
+    Selection.Find.Replacement.ClearFormatting
+    With Selection.Find
+        .Text = "^p^p^p"
+        .Replacement.Text = "^p"
+        .Forward = True
+        .Wrap = wdFindContinue
+    End With
+        With Selection.Find
+        .Text = "^p^p"
+        .Replacement.Text = "^p"
+        .Forward = True
+        .Wrap = wdFindContinue
+    End With
+    Selection.Find.Execute Replace:=wdReplaceAll
+    Selection.EscapeKey
+    Selection.Find.ClearFormatting
+    Selection.Find.Replacement.ClearFormatting
+    With Selection.Find
+        .Text = "^p^p"
+        .Replacement.Text = "^p"
+        .Forward = True
+        .Wrap = wdFindContinue
+    End With
+    Next i
+End Sub

@@ -2,6 +2,7 @@ Sub checkLayoutvaDich()
     Selection.WholeStory
     Selection.Font.Name = "Arial"
     Selection.Font.Size = 10
+    Selection.Range.Paragraphs.OutlineLevel = wdOutlineLevelBodyText
     With Selection.ParagraphFormat
         .FirstLineIndent = InchesToPoints(0)
         .LeftIndent = InchesToPoints(0)
@@ -18,10 +19,6 @@ Sub checkLayoutvaDich()
     With Selection.ParagraphFormat
        .LineSpacing = LinesToPoints(1.5)
     End With
-
-    With Selection.PageSetup
-        .Orientation = wdOrientPortrait
-    End With
     With Selection.PageSetup
         .TopMargin = InchesToPoints(1)
         .BottomMargin = InchesToPoints(1)
@@ -33,30 +30,25 @@ Sub checkLayoutvaDich()
         .PageHeight = InchesToPoints(11.69)
     End With
 
-    'Xoa Bookmark
+'Xoa Bookmark
     Dim objBookmark As Bookmark, demSo As Integer
     demSo = 0
     For Each objBookmark In ActiveDocument.Bookmarks
         objBookmark.Delete
-        demSo = demSo + 1
     Next
+    
+'Replace multiple spaces
     Dim rng As Range
     Dim replaced As Boolean
     Set rng = ActiveDocument.Content
     Do
         replaced = False
         With rng.Find
-            .ClearFormatting
-            .Text = "  "
-            .Replacement.Text = " "
-            .Forward = True
-            .Wrap = wdFindContinue
-            .Format = False
-            .MatchCase = False
-            .MatchWholeWord = False
-            .MatchWildcards = False
-            .MatchSoundsLike = False
-            .MatchAllWordForms = False
+                .ClearFormatting
+                .Text = "  "
+                .Replacement.Text = " "
+                .Forward = True
+                .Wrap = wdFindContinue
             Do While .Execute
                 rng.Text = Replace(rng.Text, "  ", " ")
                 replaced = True
@@ -64,5 +56,67 @@ Sub checkLayoutvaDich()
         End With
         rng.Collapse wdCollapseEnd
     Loop While replaced
+
+'Xoa vbTab
+    With Selection.Find
+        .Text = vbTab
+        .Replacement.Text = " "
+        .Forward = True
+        .Wrap = wdFindContinue
+    End With
+    Selection.Find.Execute Replace:=wdReplaceAll
+
+'Xoa spaces truoc punctuation
+    Dim punctuation As String
+    punctuation = ";.,:)"
+    Dim i As Integer
+    For i = 1 To Len(punctuation)
+        Dim search As String
+        Dim replace As String
+        search = " " & Mid(punctuation, i, 1)
+        replace = Mid(punctuation, i, 1)
+        With ActiveDocument.Content.Find
+            .ClearFormatting
+            .Replacement.ClearFormatting
+            .Text = search
+            .Replacement.Text = replace
+            .Forward = True
+            .Wrap = wdFindContinue
+            .Format = False
+            .MatchCase = False
+            .Execute replace:=wdReplaceAll
+        End With
+    Next i
+'Viet hoa Financial Statements va sua 1 so loi lien quan
+    Dim rng As Range
+    Set rng = ActiveDocument.Content
+    With rng.Find
+        .Text = "financial statement "
+        .Replacement.Text = "Financial Statements "
+        .MatchCase = False
+        .MatchWholeWord = False
+        .Execute replace:=wdReplaceAll
+    End With
+    With rng.Find
+        .Text = "financial statements"
+        .Replacement.Text = "Financial Statements"
+        .MatchCase = False
+        .MatchWholeWord = True
+        .Execute replace:=wdReplaceAll
+    End With
+    With rng.Find
+        .Text = "financial statements in 20"
+        .Replacement.Text = "Financial Statements 20"
+        .MatchCase = False
+        .MatchWholeWord = True
+        .Execute replace:=wdReplaceAll
+    End With
+    With rng.Find
+        .Text = "financial statements of 20"
+        .Replacement.Text = "Financial Statements 20"
+        .MatchCase = False
+        .MatchWholeWord = True
+        .Execute replace:=wdReplaceAll
+    End With
 
 End Sub

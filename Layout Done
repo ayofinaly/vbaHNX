@@ -43,6 +43,15 @@ Sub plainTextLayoutFull()
         demSo = demSo + 1
     Next 
 
+    'Xoa vbTab
+    With Selection.Find
+        .Text = vbTab
+        .Replacement.Text = " "
+        .Forward = True
+        .Wrap = wdFindContinue
+    End With
+    Selection.Find.Execute Replace:=wdReplaceAll
+
     'Dat tieu de
     On Error GoTo ErrorHandler
     Dim tenfile As String
@@ -147,14 +156,6 @@ End Sub
 
 Sub indent()
 'indent + tab
-    Dim rng As Range
-    Dim ts As TabStop
-    If Selection.Type <> wdSelectionIP Then
-        Set rng = Selection.Range
-        For Each ts In rng.ParagraphFormat.TabStops
-            ts.Clear
-        Next ts
-    End If
     With Selection.ParagraphFormat
         .FirstLineIndent = InchesToPoints(0)
     End With
@@ -187,11 +188,34 @@ Sub xuLyDuLieuXuongDong()
         Selection.TypeText (arr(i) & " " & arr(((UBound(arr) + 1) / 2) + i))
     Next i
     Set rng = Nothing
-    Selection.MoveUp Unit:=wdLine, Count:=(UBound(arr) + 1)
+    Selection.MoveUp Unit:=wdLine, count:=(UBound(arr) + 1)
     For i = 1 To ((UBound(arr) + 1) / 2)
     Selection.EndKey Unit:=wdLine
-    Selection.Delete Unit:=wdCharacter, Count:=1
-    Selection.MoveDown Unit:=wdLine, Count:=1
+    Selection.Delete Unit:=wdCharacter, count:=1
+    Selection.MoveDown Unit:=wdLine, count:=1
     Next i
 End Sub
 
+Sub laMa()
+    'Danh numbering so La Ma
+    With ListGalleries(wdNumberGallery).ListTemplates(1).ListLevels(1)
+        .NumberFormat = "%1."
+        .TrailingCharacter = wdTrailingTab
+        .NumberStyle = wdListNumberStyleUppercaseRoman
+        .NumberPosition = InchesToPoints(0.25)
+        .Alignment = wdListLevelAlignLeft
+        .TextPosition = InchesToPoints(0.5)
+        .tabPosition = wdUndefined
+        .ResetOnHigher = 0
+        .StartAt = 1
+        With .Font
+            .Name = ""
+        End With
+        .LinkedStyle = ""
+    End With
+    ListGalleries(wdNumberGallery).ListTemplates(1).Name = ""
+    Selection.Range.ListFormat.ApplyListTemplateWithLevel ListTemplate:= _
+        ListGalleries(wdNumberGallery).ListTemplates(1), ContinuePreviousList:= _
+        True, ApplyTo:=wdListApplyToWholeList, DefaultListBehavior:= _
+        wdWord10ListBehavior
+End Sub
