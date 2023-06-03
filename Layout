@@ -1,4 +1,3 @@
-```vba
 Sub hlNgayChuaDich()
     Dim rng As Range
     Dim regEx As Object
@@ -133,4 +132,3 @@ Sub xuLyDuLieuXuongDong()
     Selection.MoveDown Unit:=wdLine, count:=1
     Next i
 End Sub
-```
