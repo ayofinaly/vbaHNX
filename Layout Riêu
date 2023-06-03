@@ -1,0 +1,140 @@
+Sub indent()
+'indent + tab
+    With Selection.ParagraphFormat
+        .FirstLineIndent = InchesToPoints(0)
+    End With
+    With Selection.ParagraphFormat
+        .LeftIndent = InchesToPoints(0)
+    End With
+    Dim selRange As Range
+    Set selRange = Selection.Range
+    Dim tabPosition As Double
+    tabPosition = InchesToPoints(0.25)
+    Dim para As Paragraph
+    For Each para In selRange.Paragraphs
+        para.TabStops.Add tabPosition, wdAlignTabLeft, wdTabLeaderSpaces
+    Next para
+End Sub
+'-----Obsolete-----
+Sub xoaBulletAndNumberingSK()
+    Selection.Find.ClearFormatting
+    Selection.Find.Text = vbTab
+    Selection.Find.Execute
+    Selection.MoveStart wdLine, -1
+    If Selection.Find.found = True Then
+        If Len(Selection) < 10 Then
+        Selection.Delete
+        Else
+         Selection.MoveRight wdCharacter, 10
+        End If
+    End If
+End Sub
+Sub xoaBulletPlus()
+    Selection.Find.ClearFormatting
+    Selection.Find.Text = "+"
+    Selection.Find.Execute
+    Selection.MoveEnd wdCharacter, 1
+    If Selection.Find.found = True Then
+        If Selection.Information(wdFirstCharacterColumnNumber) = 1 Then
+        Selection.Delete
+        Else
+         Selection.MoveRight wdCharacter, 10
+        End If
+    End If
+End Sub
+Sub saoKhueHNXfull()
+    Selection.WholeStory
+    Selection.ClearFormatting
+    Selection.Font.Name = "Arial"
+    Selection.Font.Size = 10
+    With Selection.ParagraphFormat
+        .FirstLineIndent = InchesToPoints(0)
+        .LeftIndent = InchesToPoints(0)
+        .CharacterUnitLeftIndent = 0
+        .RightIndent = InchesToPoints(0)
+        .CharacterUnitRightIndent = 0
+    End With
+    With Selection.ParagraphFormat
+        .SpaceBefore = 0
+        .LineUnitBefore = 0
+        .SpaceAfter = 6
+        .LineUnitAfter = 0
+    End With
+    With Selection.ParagraphFormat
+       .LineSpacing = LinesToPoints(1.5)
+    End With
+   
+    With Selection.PageSetup
+        .Orientation = wdOrientPortrait
+    End With
+    With Selection.PageSetup
+        .TopMargin = InchesToPoints(1)
+        .BottomMargin = InchesToPoints(1)
+        .LeftMargin = InchesToPoints(1)
+        .RightMargin = InchesToPoints(1)
+    End With
+    With Selection.PageSetup
+        .PageWidth = InchesToPoints(8.27)
+        .PageHeight = InchesToPoints(11.69)
+    End With
+    
+    Dim objBookmark As Bookmark, demSo As Integer
+    demSo = 0
+    For Each objBookmark In ActiveDocument.Bookmarks
+        objBookmark.Delete
+        demSo = demSo + 1
+    Next
+    MsgBox "Da format va xoa " & demSo & " Bookmark"
+    
+    '---------Dat tieu de---------
+    On Error GoTo ErrorHandler
+    Dim tenfile As String
+    Dim farray1() As String
+    Dim farray2() As String
+    Dim dai As String
+        Selection.HomeKey Unit:=wdStory
+        tenfile = ActiveDocument.Name
+        farray1 = Split(tenfile, "_")
+        farray2 = Split(farray1(0), ".")
+        dai = farray2(1) & ": " & Left(farray1(2), Len(farray1(2)) - 5)
+        Selection.TypeText Text:=dai
+        Selection.MoveStart wdLine, -1
+        Selection.Font.Bold = True
+        Selection.MoveStart wdCharacter, Len(dai)
+        Selection.TypeParagraph
+    Exit Sub
+ErrorHandler:
+MsgBox "Dat lai ten file"
+    Resume Next
+End Sub
+Sub canChinhBang()
+    With Selection.Tables(1)
+       ' .TopPadding = InchesToPoints(0)
+        '.BottomPadding = InchesToPoints(0)
+        '.LeftPadding = InchesToPoints(0.08)
+        '.RightPadding = InchesToPoints(0.08)
+        '.Spacing = 0
+        .AllowPageBreaks = True
+        .AllowAutoFit = True
+    End With
+    Selection.SelectCell
+    Selection.Cells.VerticalAlignment = wdCellAlignVerticalCenter
+    Selection.Tables(1).AutoFitBehavior (wdAutoFitWindow)
+End Sub
+Sub xoavbTab()
+    With Selection.Find
+        .Text = vbTab
+        .Replacement.Text = " "
+        .Forward = True
+        .Wrap = wdFindContinue
+        .Format = False
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = False
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+    End With
+    Selection.Find.Execute Replace:=wdReplaceAll
+End Sub
+
+
