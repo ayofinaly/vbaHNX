@@ -26,6 +26,9 @@ Selection.WholeStory
         .CharacterUnitLeftIndent = 0
         .RightIndent = InchesToPoints(0)
         .CharacterUnitRightIndent = 0
+        .SpaceBeforeAuto = False
+        .SpaceAfterAuto = False
+        .WordWrap = True
     End With
     With Selection.ParagraphFormat
         .SpaceBefore = 0

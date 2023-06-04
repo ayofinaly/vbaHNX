@@ -88,3 +88,8 @@ Sub suaFinancialStatements()
         .Execute replace:=wdReplaceAll
     End With
 End Sub
+
+Sub confirmTrackChanges()
+    If ActiveDocument.Revisions.Count >= 1 Then _ 
+    ActiveDocument.Revisions.AcceptAll
+End Sub
