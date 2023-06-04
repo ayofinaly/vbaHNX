@@ -43,14 +43,6 @@ Sub plainTextLayoutFull()
         demSo = demSo + 1
     Next 
 
-    'Xoa vbTab
-    With Selection.Find
-        .Text = vbTab
-        .Replacement.Text = " "
-        .Forward = True
-        .Wrap = wdFindContinue
-    End With
-    Selection.Find.Execute Replace:=wdReplaceAll
 
     'Dat tieu de
     On Error GoTo ErrorHandler
@@ -218,4 +210,27 @@ Sub laMa()
         ListGalleries(wdNumberGallery).ListTemplates(1), ContinuePreviousList:= _
         True, ApplyTo:=wdListApplyToWholeList, DefaultListBehavior:= _
         wdWord10ListBehavior
+End Sub
+
+Sub xoavbTab ()
+    With Selection.Find
+        .Text = vbTab
+        .Replacement.Text = " "
+        .Forward = True
+        .Wrap = wdFindContinue
+    End With
+    Selection.Find.Execute Replace:=wdReplaceAll
+End Sub
+
+Sub tableHNX()
+'All: Autofit; vertical allign center; autofit content
+    Dim tbl As Table
+    For Each tbl In ActiveDocument.Tables
+        tbl.AutoFitBehavior (wdAutoFitWindow)
+        tbl.Rows.HeightRule = wdRowHeightAuto
+        tbl.Rows.AllowBreakAcrossPages = False
+        For Each cell In tbl.Range.Cells
+            cell.VerticalAlignment = wdCellAlignVerticalCenter
+        Next cell
+    Next tbl
 End Sub

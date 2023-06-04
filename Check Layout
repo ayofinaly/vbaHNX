@@ -1,5 +1,22 @@
 Sub checkLayoutvaDich()
-    Selection.WholeStory
+'Thay font numbering + bullet
+    Dim par As Paragraph
+    For Each par In ActiveDocument.ListParagraphs
+        With par.Range.ListFormat.ListTemplate.ListLevels(1).Font
+            .Name = "Arial"
+            .Size = 10
+        End With
+         With par.Range.ListFormat.ListTemplate.ListLevels(2).Font
+            .Name = "Arial"
+            .Size = 10
+        End With
+         With par.Range.ListFormat.ListTemplate.ListLevels(3).Font
+            .Name = "Arial"
+            .Size = 10
+        End With
+    Next par
+'Layout tong hop
+Selection.WholeStory
     Selection.Font.Name = "Arial"
     Selection.Font.Size = 10
     Selection.Range.Paragraphs.OutlineLevel = wdOutlineLevelBodyText
@@ -57,15 +74,6 @@ Sub checkLayoutvaDich()
         rng.Collapse wdCollapseEnd
     Loop While replaced
 
-'Xoa vbTab
-    With Selection.Find
-        .Text = vbTab
-        .Replacement.Text = " "
-        .Forward = True
-        .Wrap = wdFindContinue
-    End With
-    Selection.Find.Execute Replace:=wdReplaceAll
-
 'Xoa spaces truoc punctuation
     Dim punctuation As String
     punctuation = ";.,:)"
@@ -87,36 +95,6 @@ Sub checkLayoutvaDich()
             .Execute replace:=wdReplaceAll
         End With
     Next i
-'Viet hoa Financial Statements va sua 1 so loi lien quan
-    Dim rng As Range
-    Set rng = ActiveDocument.Content
-    With rng.Find
-        .Text = "financial statement "
-        .Replacement.Text = "Financial Statements "
-        .MatchCase = False
-        .MatchWholeWord = False
-        .Execute replace:=wdReplaceAll
-    End With
-    With rng.Find
-        .Text = "financial statements"
-        .Replacement.Text = "Financial Statements"
-        .MatchCase = False
-        .MatchWholeWord = True
-        .Execute replace:=wdReplaceAll
-    End With
-    With rng.Find
-        .Text = "financial statements in 20"
-        .Replacement.Text = "Financial Statements 20"
-        .MatchCase = False
-        .MatchWholeWord = True
-        .Execute replace:=wdReplaceAll
-    End With
-    With rng.Find
-        .Text = "financial statements of 20"
-        .Replacement.Text = "Financial Statements 20"
-        .MatchCase = False
-        .MatchWholeWord = True
-        .Execute replace:=wdReplaceAll
-    End With
+
 
 End Sub

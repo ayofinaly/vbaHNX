@@ -54,3 +54,37 @@ Sub HighlightVNDsai()
         Loop
     End With
 End Sub
+
+Sub suaFinancialStatements()
+'Viet hoa Financial Statements va sua 1 so loi lien quan
+    Dim rng As Range
+    Set rng = ActiveDocument.Content
+    With rng.Find
+        .Text = "financial statement "
+        .Replacement.Text = "Financial Statements "
+        .MatchCase = False
+        .MatchWholeWord = False
+        .Execute replace:=wdReplaceAll
+    End With
+    With rng.Find
+        .Text = "financial statements"
+        .Replacement.Text = "Financial Statements"
+        .MatchCase = False
+        .MatchWholeWord = True
+        .Execute replace:=wdReplaceAll
+    End With
+    With rng.Find
+        .Text = "financial statements in 20"
+        .Replacement.Text = "Financial Statements 20"
+        .MatchCase = False
+        .MatchWholeWord = True
+        .Execute replace:=wdReplaceAll
+    End With
+    With rng.Find
+        .Text = "financial statements of 20"
+        .Replacement.Text = "Financial Statements 20"
+        .MatchCase = False
+        .MatchWholeWord = True
+        .Execute replace:=wdReplaceAll
+    End With
+End Sub
